@@ -1,0 +1,4 @@
+ansible projects:
+
+1. install apache solr using ansible
+2. install apache server on multi types of OS with a single script
