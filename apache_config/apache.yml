@@ -1,0 +1,39 @@
+---
+- name: install apache.
+  hosts: all 
+  become: true
+
+
+  handlers:
+    - name: restart apache
+      service:
+        name: "{{apache_service}}"
+        state: restarted
+
+
+  pre_tasks:
+    - name: load the correct vars file.
+      include_vars: "{{item}}"
+      with_first_found:
+        - "vars/apache_{{ansible_os_family}}.yml"
+        - "vars/apache_default.yml"
+
+
+  tasks:
+    - name: ensure apache is installed.
+      package: 
+        name: "{{apache_package}}"
+        state: present
+
+    - name: copy the config files.
+      copy:
+        src: files/test.conf
+        dest: "{{apache_config_dir}}/test.conf"
+      notify: restart apache
+
+
+    - name: start up the server
+      service:
+        name: "{{apache_service}}"
+        state: started
+        enabled: true
